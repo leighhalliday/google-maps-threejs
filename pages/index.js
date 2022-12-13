@@ -20,7 +20,7 @@ import fetchDirections from "../src/fetchDirections";
 const mapOptions = {
   mapId: process.env.NEXT_PUBLIC_MAP_ID,
   center: { lat: 43.66293, lng: -79.39314 },
-  zoom: 17,
+  zoom: 18,
   disableDefaultUI: true,
   heading: 25,
   tilt: 60,
@@ -51,8 +51,8 @@ export default function App() {
 }
 
 function Directions({ setRoute }) {
-  const [origin] = useState("10 Market Street Toronto");
-  const [destination] = useState("100 Yonge Street Toronto");
+  const [origin] = useState("27 Front St E Toronto");
+  const [destination] = useState("75 Yonge Street Toronto");
 
   useEffect(() => {
     fetchDirections(origin, destination, setRoute);
@@ -144,9 +144,9 @@ function createTrackFromCurve(curve) {
 
 async function loadModel() {
   const loader = new GLTFLoader();
-  const object = await loader.loadAsync("/low_poly_vehicle/scene.gltf");
+  const object = await loader.loadAsync("/low_poly_car_two/scene.gltf");
   const group = object.scene;
-  group.scale.setScalar(10);
+  group.scale.setScalar(0.5);
 
   return group;
 }
