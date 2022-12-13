@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low Poly Scooter
+* source:	https://sketchfab.com/3d-models/low-poly-scooter-cf0b53fddb5c469b9d0259104151f72d
+* author:	Qbo2Qbo (https://sketchfab.com/Qbo2Qbo)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low Poly Scooter" (https://sketchfab.com/3d-models/low-poly-scooter-cf0b53fddb5c469b9d0259104151f72d) by Qbo2Qbo (https://sketchfab.com/Qbo2Qbo) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
