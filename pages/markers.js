@@ -40,7 +40,7 @@ function Marker() {
     priceTag.className = "price-tag";
     priceTag.textContent = "$2.5M";
 
-    const markerView = new google.maps.Marker.AdvancedMarkerView({
+    const markerView = new google.maps.marker.AdvancedMarkerView({
       map,
       position: { lat: 37.42, lng: -122.1 },
       content: priceTag,
