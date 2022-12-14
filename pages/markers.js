@@ -25,6 +25,7 @@ export default function App() {
       googleMapsAPIKey={process.env.NEXT_PUBLIC_MAP_API_KEY}
       onLoadMap={() => setMapReady(true)}
       libraries={["marker"]}
+      version="beta"
     >
       <div ref={mapRef} style={{ height: "100vh" }} />
       {mapReady && <Marker />}
