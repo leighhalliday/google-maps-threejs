@@ -224,11 +224,6 @@
     "@typescript-eslint/types" "5.46.0"
     eslint-visitor-keys "^3.3.0"
 
-"@ubilabs/google-maps-react-hooks@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@ubilabs/google-maps-react-hooks/-/google-maps-react-hooks-2.0.2.tgz#e9c7b2d570485e7f5fc71a5e8f01868c3106de34"
-  integrity sha512-rKs2p9+G2r/fKRykltcjyx6CTjC7/yLQWPxeiohbaGMX9CSPeH5HiDNko/WwtNd5HPAf5awyVSL7aKhjyw0aUA==
-
 "@ubilabs/threejs-overlay-view@^0.7.1":
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/@ubilabs/threejs-overlay-view/-/threejs-overlay-view-0.7.1.tgz#f534902685d076bc68dc9c9fac63306cff0b6720"

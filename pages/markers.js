@@ -158,6 +158,4 @@ function Marker({ map, children, onClick, position }) {
       listener.remove();
     };
   }, [map, children]);
-
-  return null;
 }

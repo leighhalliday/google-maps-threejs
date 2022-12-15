@@ -1,8 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
-import {
-  GoogleMapsProvider,
-  useGoogleMap,
-} from "@ubilabs/google-maps-react-hooks";
+import React, { useState, useRef, useEffect } from "react";
+import { Wrapper } from "@googlemaps/react-wrapper";
 import {
   PerspectiveCamera,
   Scene,
@@ -22,28 +19,30 @@ const mapOptions = {
 };
 
 export default function App() {
-  const [mapContainer, setMapContainer] = useState(null);
-  const mapRef = useCallback((node) => {
-    node && setMapContainer(node);
-  }, []);
-  const [mapReady, setMapReady] = useState(false);
-
   return (
-    <GoogleMapsProvider
-      mapContainer={mapContainer}
-      mapOptions={mapOptions}
-      googleMapsAPIKey={process.env.NEXT_PUBLIC_MAP_API_KEY}
-      onLoadMap={() => setMapReady(true)}
-    >
-      <div ref={mapRef} style={{ height: "100vh" }} />
-      {mapReady && <Overlay />}
-    </GoogleMapsProvider>
+    <Wrapper apiKey={process.env.NEXT_PUBLIC_MAP_API_KEY}>
+      <MyMap />
+    </Wrapper>
   );
 }
 
-function Overlay() {
-  const map = useGoogleMap();
+function MyMap() {
+  const [map, setMap] = useState();
+  const ref = useRef();
 
+  useEffect(() => {
+    setMap(new window.google.maps.Map(ref.current, mapOptions));
+  }, []);
+
+  return (
+    <>
+      <div ref={ref} id="map" />
+      {map && <Overlay map={map} />}
+    </>
+  );
+}
+
+function Overlay({ map }) {
   useEffect(() => {
     const overlay = new google.maps.WebGLOverlayView();
     const loader = new GLTFLoader();
