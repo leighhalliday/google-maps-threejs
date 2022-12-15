@@ -1,14 +1,5 @@
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-  StrictMode,
-} from "react";
-import {
-  GoogleMapsProvider,
-  useGoogleMap,
-} from "@ubilabs/google-maps-react-hooks";
+import React, { useState, useEffect, useRef } from "react";
+import { Wrapper } from "@googlemaps/react-wrapper";
 import ThreejsOverlayView from "@ubilabs/threejs-overlay-view";
 import { CatmullRomCurve3, Vector3 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
@@ -27,26 +18,28 @@ const mapOptions = {
 };
 
 export default function App() {
-  const [mapContainer, setMapContainer] = useState(null);
-  const mapRef = useCallback((node) => {
-    node && setMapContainer(node);
-  }, []);
-  const [mapReady, setMapReady] = useState(false);
+  return (
+    <Wrapper apiKey={process.env.NEXT_PUBLIC_MAP_API_KEY}>
+      <MyMap />
+    </Wrapper>
+  );
+}
+
+function MyMap() {
   const [route, setRoute] = useState(null);
+  const [map, setMap] = useState();
+  const ref = useRef();
+
+  useEffect(() => {
+    setMap(new window.google.maps.Map(ref.current, mapOptions));
+  }, []);
 
   return (
-    <GoogleMapsProvider
-      mapContainer={mapContainer}
-      mapOptions={mapOptions}
-      googleMapsAPIKey={process.env.NEXT_PUBLIC_MAP_API_KEY}
-      onLoadMap={() => setMapReady(true)}
-    >
-      <StrictMode>
-        <div ref={mapRef} style={{ height: "100vh" }} />
-        {mapReady && <Directions setRoute={setRoute} />}
-        {mapReady && route && <Animate route={route} />}
-      </StrictMode>
-    </GoogleMapsProvider>
+    <>
+      <div ref={ref} id="map" />
+      {map && <Directions setRoute={setRoute} />}
+      {map && route && <Animate map={map} route={route} />}
+    </>
   );
 }
 
@@ -72,8 +65,7 @@ function Directions({ setRoute }) {
 const ANIMATION_MS = 10000;
 const FRONT_VECTOR = new Vector3(0, -1, 0);
 
-function Animate({ route }) {
-  const map = useGoogleMap();
+function Animate({ route, map }) {
   const overlayRef = useRef();
   const trackRef = useRef();
   const carRef = useRef();

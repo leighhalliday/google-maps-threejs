@@ -1,8 +1,18 @@
-import React, { useState, useCallback, useEffect } from "react";
-import {
-  GoogleMapsProvider,
-  useGoogleMap,
-} from "@ubilabs/google-maps-react-hooks";
+import { Wrapper } from "@googlemaps/react-wrapper";
+import { useRef, useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+
+export default function App() {
+  return (
+    <Wrapper
+      apiKey={process.env.NEXT_PUBLIC_MAP_API_KEY}
+      version="beta"
+      libraries={["marker"]}
+    >
+      <MyMap />
+    </Wrapper>
+  );
+}
 
 const mapOptions = {
   mapId: process.env.NEXT_PUBLIC_MAP_ID,
@@ -11,44 +21,143 @@ const mapOptions = {
   disableDefaultUI: true,
 };
 
-export default function App() {
-  const [mapContainer, setMapContainer] = useState(null);
-  const mapRef = useCallback((node) => {
-    node && setMapContainer(node);
+function MyMap() {
+  const [map, setMap] = useState();
+  const ref = useRef();
+
+  useEffect(() => {
+    setMap(new window.google.maps.Map(ref.current, mapOptions));
   }, []);
-  const [mapReady, setMapReady] = useState(false);
 
   return (
-    <GoogleMapsProvider
-      mapContainer={mapContainer}
-      mapOptions={mapOptions}
-      googleMapsAPIKey={process.env.NEXT_PUBLIC_MAP_API_KEY}
-      onLoadMap={() => setMapReady(true)}
-      libraries={["marker"]}
-      version="beta"
-    >
-      <div ref={mapRef} style={{ height: "100vh" }} />
-      {mapReady && <Marker />}
-    </GoogleMapsProvider>
+    <>
+      <div ref={ref} id="map" />
+      {map && <Weather map={map} />}
+    </>
   );
 }
 
-function Marker() {
-  const map = useGoogleMap();
+function Weather({ map }) {
+  const [editing, setEditing] = useState();
+  const [highlight, setHighlight] = useState();
+  const [data, setData] = useState({
+    A: {
+      name: "Toronto",
+      position: { lat: 43.66293, lng: -79.39314 },
+      climate: "Sunny",
+      high: 20,
+      low: 15,
+    },
+    B: {
+      name: "Mississauga",
+      position: { lat: 43.66493, lng: -79.39314 },
+      climate: "Sunny",
+      high: 20,
+      low: 15,
+    },
+    C: {
+      name: "Brampton",
+      position: { lat: 43.66493, lng: -79.39114 },
+      climate: "Sunny",
+      high: 20,
+      low: 15,
+    },
+  });
+
+  return (
+    <>
+      {editing && (
+        <Editing
+          data={data[editing]}
+          update={(newData) =>
+            setData((existing) => ({ ...existing, [editing]: newData }))
+          }
+          close={() => setEditing(null)}
+        />
+      )}
+      {Object.entries(data).map(([key, value]) => (
+        <Marker
+          key={key}
+          map={map}
+          position={value.position}
+          onClick={(e) => {
+            e.domEvent.preventDefault();
+            setEditing(key);
+            console.log("click marker", key, e.domEvent.target);
+          }}
+        >
+          <div
+            className={`price-tag ${highlight === key ? "highlight" : ""}`}
+            onMouseEnter={(e) => {
+              setHighlight(key);
+            }}
+            onMouseLeave={(e) => {
+              setHighlight(null);
+            }}
+          >
+            <h2>{value.climate}</h2>
+            <div>High: {value.high}c</div>
+            <div>Low: {value.low}c</div>
+          </div>
+        </Marker>
+      ))}
+    </>
+  );
+}
+
+function Editing({ data, update, close }) {
+  return (
+    <div className="editing">
+      <h2>Editing {data.name}</h2>
+      <input
+        type="number"
+        value={data.high}
+        onChange={(e) => update({ ...data, high: e.target.value })}
+      />
+      <input
+        type="number"
+        value={data.low}
+        onChange={(e) => update({ ...data, low: e.target.value })}
+      />
+      <button type="button" onClick={() => close()}>
+        Save
+      </button>
+    </div>
+  );
+}
+
+function Marker({ map, children, onClick, position }) {
+  const rootRef = useRef();
+  const markerRef = useRef();
 
   useEffect(() => {
-    const priceTag = document.createElement("div");
-    priceTag.className = "price-tag";
-    priceTag.textContent = "$2.5M";
+    if (!markerRef.current) {
+      const container = document.createElement("div");
+      rootRef.current = createRoot(container);
 
-    const markerView = new google.maps.marker.AdvancedMarkerView({
-      map,
-      position: { lat: 37.42, lng: -122.1 },
-      content: priceTag,
-    });
+      markerRef.current = new google.maps.marker.AdvancedMarkerView({
+        position,
+        content: container,
+      });
+
+      console.log("creating", position);
+    }
 
     return () => {
-      // markerView.setMap(null);
+      markerRef.current.map = null;
     };
-  }, [map]);
+  }, []);
+
+  useEffect(() => {
+    rootRef.current.render(children);
+    markerRef.current.position = position;
+    markerRef.current.map = map;
+    const listener = markerRef.current.addListener("click", onClick);
+
+    return () => {
+      listener.remove();
+    };
+  }, [map, children]);
+
+  return null;
 }
