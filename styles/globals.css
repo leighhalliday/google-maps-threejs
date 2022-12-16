@@ -13,6 +13,7 @@ h3,
 h4 {
   padding: 0.25rem 0rem;
   margin: 0rem;
+  margin-bottom: 0.5rem;
 }
 
 a {
@@ -48,16 +49,88 @@ a {
   height: 100vh;
 }
 
-.price-tag {
-  padding: 1rem;
+.marker {
+  padding: 0.5rem;
   background: black;
   transition: all 0.3s ease-out;
+  position: relative;
   width: 100px;
+  border-radius: 5px;
+}
+
+.marker:after {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  font-size: 0.75rem;
+  opacity: 1;
+}
+.marker.highlight:after {
+  opacity: 0;
+  animation: fadeOut 0.5s;
+}
+.marker.raining:after {
+  content: "🌧️";
+}
+.marker.cloudy:after {
+  content: "⛅";
+}
+.marker.sunny:after {
+  content: "☀️";
+}
+
+.marker h2 {
+  margin: 0;
+}
+.marker p {
+  margin: 0;
 }
 
 .highlight {
-  background: green;
   width: 200px;
+  color: white;
+}
+.highlight.raining {
+  background: #457b9d;
+}
+.highlight.cloudy {
+  background: #6d6875;
+}
+.highlight.sunny {
+  background: #ffc300;
+  color: black;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.five-day {
+  opacity: 1;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  animation: fadeIn 1s;
 }
 
 .editing {
@@ -68,4 +141,21 @@ a {
   width: 20%;
   min-width: 200px;
   background: black;
+}
+
+.editing label {
+  font-size: 0.8rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.editing input,
+select {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+.editing button {
+  padding: 0.5rem;
 }

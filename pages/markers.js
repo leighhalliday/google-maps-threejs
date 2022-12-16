@@ -17,7 +17,7 @@ export default function App() {
 const mapOptions = {
   mapId: process.env.NEXT_PUBLIC_MAP_ID,
   center: { lat: 43.66293, lng: -79.39314 },
-  zoom: 17,
+  zoom: 10,
   disableDefaultUI: true,
 };
 
@@ -37,32 +37,34 @@ function MyMap() {
   );
 }
 
+const weatherData = {
+  A: {
+    name: "Toronto",
+    position: { lat: 43.66293, lng: -79.39314 },
+    climate: "Raining",
+    temp: 20,
+    fiveDay: [15, 18, 12, 22, 20],
+  },
+  B: {
+    name: "Guelph",
+    position: { lat: 43.544811, lng: -80.248108 },
+    climate: "Cloudy",
+    temp: 20,
+    fiveDay: [15, 18, 12, 22, 20],
+  },
+  C: {
+    name: "Orangeville",
+    position: { lat: 43.919239, lng: -80.097412 },
+    climate: "Sunny",
+    temp: 20,
+    fiveDay: [15, 18, 12, 22, 20],
+  },
+};
+
 function Weather({ map }) {
   const [editing, setEditing] = useState();
   const [highlight, setHighlight] = useState();
-  const [data, setData] = useState({
-    A: {
-      name: "Toronto",
-      position: { lat: 43.66293, lng: -79.39314 },
-      climate: "Sunny",
-      high: 20,
-      low: 15,
-    },
-    B: {
-      name: "Mississauga",
-      position: { lat: 43.66493, lng: -79.39314 },
-      climate: "Sunny",
-      high: 20,
-      low: 15,
-    },
-    C: {
-      name: "Brampton",
-      position: { lat: 43.66493, lng: -79.39114 },
-      climate: "Sunny",
-      high: 20,
-      low: 15,
-    },
-  });
+  const [data, setData] = useState(weatherData);
 
   return (
     <>
@@ -80,24 +82,23 @@ function Weather({ map }) {
           key={key}
           map={map}
           position={value.position}
-          onClick={(e) => {
-            e.domEvent.preventDefault();
-            setEditing(key);
-            console.log("click marker", key, e.domEvent.target);
-          }}
+          onClick={() => setEditing(key)}
         >
           <div
-            className={`price-tag ${highlight === key ? "highlight" : ""}`}
-            onMouseEnter={(e) => {
-              setHighlight(key);
-            }}
-            onMouseLeave={(e) => {
-              setHighlight(null);
-            }}
+            className={`marker ${value.climate.toLowerCase()} ${
+              highlight === key || editing === key ? "highlight" : ""
+            }`}
+            onMouseEnter={() => setHighlight(key)}
+            onMouseLeave={() => setHighlight(null)}
           >
             <h2>{value.climate}</h2>
-            <div>High: {value.high}c</div>
-            <div>Low: {value.low}c</div>
+            <div>{value.temp}c</div>
+            {highlight === key || editing === key ? (
+              <div className="five-day">
+                <p>Next 5</p>
+                <p>{value.fiveDay.join(", ")}</p>
+              </div>
+            ) : null}
           </div>
         </Marker>
       ))}
@@ -109,16 +110,28 @@ function Editing({ data, update, close }) {
   return (
     <div className="editing">
       <h2>Editing {data.name}</h2>
+
+      <label for="climate">Climate</label>
+      <select
+        id="climate"
+        value={data.climate}
+        onChange={(e) => update({ ...data, climate: e.target.value })}
+      >
+        {["Sunny", "Cloudy", "Raining"].map((val) => (
+          <option key={val} value={val}>
+            {val}
+          </option>
+        ))}
+      </select>
+
+      <label for="temp">Temperature</label>
       <input
+        id="temp"
         type="number"
-        value={data.high}
-        onChange={(e) => update({ ...data, high: e.target.value })}
+        value={data.temp}
+        onChange={(e) => update({ ...data, temp: e.target.value })}
       />
-      <input
-        type="number"
-        value={data.low}
-        onChange={(e) => update({ ...data, low: e.target.value })}
-      />
+
       <button type="button" onClick={() => close()}>
         Save
       </button>
@@ -131,7 +144,7 @@ function Marker({ map, children, onClick, position }) {
   const markerRef = useRef();
 
   useEffect(() => {
-    if (!markerRef.current) {
+    if (!rootRef.current) {
       const container = document.createElement("div");
       rootRef.current = createRoot(container);
 
@@ -139,8 +152,6 @@ function Marker({ map, children, onClick, position }) {
         position,
         content: container,
       });
-
-      console.log("creating", position);
     }
 
     return () => {
