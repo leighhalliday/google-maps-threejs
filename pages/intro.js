@@ -11,7 +11,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 const mapOptions = {
   mapId: process.env.NEXT_PUBLIC_MAP_ID,
-  center: { lat: 43.66293, lng: -79.39314 },
+  center: { lat: 43.661036, lng: -79.391277 },
   zoom: 17,
   disableDefaultUI: true,
   heading: 25,
@@ -51,14 +51,14 @@ function Overlay({ map }) {
     overlay.onAdd = () => {
       scene = new Scene();
       camera = new PerspectiveCamera();
-      const light = new AmbientLight(0xffffff, 0.8);
+      const light = new AmbientLight(0xffffff, 0.9);
       scene.add(light);
 
       loader.loadAsync("/low_poly_scooter/scene.gltf").then((object) => {
         const group = object.scene;
-        group.scale.setScalar(50);
+        group.scale.setScalar(25);
         group.rotation.set(Math.PI / 2, 0, 0);
-        group.position.setZ(-100);
+        group.position.setZ(-120);
         scene.add(group);
       });
     };
@@ -80,10 +80,10 @@ function Overlay({ map }) {
           });
 
           if (mapOptions.tilt < 60) {
-            mapOptions.tilt += 1;
-          } else if (mapOptions.zoom < 19) {
+            mapOptions.tilt += 0.5;
+          } else if (mapOptions.zoom < 20) {
             mapOptions.zoom += 0.05;
-          } else if (mapOptions.heading < 75) {
+          } else if (mapOptions.heading < 125) {
             mapOptions.heading += 0.5;
           } else {
             renderer.setAnimationLoop(null);
