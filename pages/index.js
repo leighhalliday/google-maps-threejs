@@ -136,7 +136,8 @@ function createTrackFromCurve(curve) {
 
 async function loadModel() {
   const loader = new GLTFLoader();
-  const object = await loader.loadAsync("/low_poly_car_two/scene.gltf");
+  // This work is based on "Low poly Car" (https://sketchfab.com/3d-models/low-poly-car-f822f0c500a24ca9ac2af183d2e630b4) by reyad.bader (https://sketchfab.com/reyad.bader) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  const object = await loader.loadAsync("/low_poly_car/scene.gltf");
   const group = object.scene;
   group.scale.setScalar(0.5);
 

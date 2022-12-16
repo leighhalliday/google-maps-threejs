@@ -111,7 +111,7 @@ function Editing({ data, update, close }) {
     <div className="editing">
       <h2>Editing {data.name}</h2>
 
-      <label for="climate">Climate</label>
+      <label htmlFor="climate">Climate</label>
       <select
         id="climate"
         value={data.climate}
@@ -124,7 +124,7 @@ function Editing({ data, update, close }) {
         ))}
       </select>
 
-      <label for="temp">Temperature</label>
+      <label htmlFor="temp">Temperature</label>
       <input
         id="temp"
         type="number"
