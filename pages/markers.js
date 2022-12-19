@@ -62,41 +62,43 @@ const weatherData = {
 };
 
 function Weather({ map }) {
-  const [editing, setEditing] = useState();
-  const [highlight, setHighlight] = useState();
   const [data, setData] = useState(weatherData);
+  const [highlight, setHighlight] = useState();
+  const [editing, setEditing] = useState();
 
   return (
     <>
       {editing && (
         <Editing
-          data={data[editing]}
-          update={(newData) =>
-            setData((existing) => ({ ...existing, [editing]: newData }))
-          }
+          weather={data[editing]}
+          update={(newWeather) => {
+            setData((existing) => {
+              return { ...existing, [editing]: { ...newWeather } };
+            });
+          }}
           close={() => setEditing(null)}
         />
       )}
-      {Object.entries(data).map(([key, value]) => (
+      {Object.entries(data).map(([key, weather]) => (
         <Marker
           key={key}
           map={map}
-          position={value.position}
+          position={weather.position}
           onClick={() => setEditing(key)}
         >
           <div
-            className={`marker ${value.climate.toLowerCase()} ${
+            className={`marker ${weather.climate.toLowerCase()} ${
               highlight === key || editing === key ? "highlight" : ""
             }`}
             onMouseEnter={() => setHighlight(key)}
             onMouseLeave={() => setHighlight(null)}
           >
-            <h2>{value.climate}</h2>
-            <div>{value.temp}c</div>
+            <h2>{weather.climate}</h2>
+            <div>{weather.temp}c</div>
             {highlight === key || editing === key ? (
               <div className="five-day">
                 <p>Next 5</p>
-                <p>{value.fiveDay.join(", ")}</p>
+                <p>{weather.fiveDay.join(", ")}</p>
               </div>
             ) : null}
           </div>
@@ -106,16 +108,16 @@ function Weather({ map }) {
   );
 }
 
-function Editing({ data, update, close }) {
+function Editing({ weather, update, close }) {
   return (
     <div className="editing">
-      <h2>Editing {data.name}</h2>
+      <h2>Editing {weather.name}</h2>
 
       <label htmlFor="climate">Climate</label>
       <select
         id="climate"
-        value={data.climate}
-        onChange={(e) => update({ ...data, climate: e.target.value })}
+        value={weather.climate}
+        onChange={(e) => update({ ...weather, climate: e.target.value })}
       >
         {["Sunny", "Cloudy", "Raining"].map((val) => (
           <option key={val} value={val}>
@@ -128,18 +130,18 @@ function Editing({ data, update, close }) {
       <input
         id="temp"
         type="number"
-        value={data.temp}
-        onChange={(e) => update({ ...data, temp: e.target.value })}
+        value={weather.temp}
+        onChange={(e) => update({ ...weather, temp: e.target.value })}
       />
 
       <button type="button" onClick={() => close()}>
-        Save
+        Close
       </button>
     </div>
   );
 }
 
-function Marker({ map, children, onClick, position }) {
+function Marker({ map, position, children, onClick }) {
   const rootRef = useRef();
   const markerRef = useRef();
 
@@ -154,9 +156,7 @@ function Marker({ map, children, onClick, position }) {
       });
     }
 
-    return () => {
-      markerRef.current.map = null;
-    };
+    return () => (markerRef.current.map = null);
   }, []);
 
   useEffect(() => {
@@ -164,9 +164,6 @@ function Marker({ map, children, onClick, position }) {
     markerRef.current.position = position;
     markerRef.current.map = map;
     const listener = markerRef.current.addListener("click", onClick);
-
-    return () => {
-      listener.remove();
-    };
-  }, [map, children]);
+    return () => listener.remove();
+  }, [map, position, children, onClick]);
 }
