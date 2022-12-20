@@ -27,13 +27,16 @@ export default function App() {
 }
 
 function MyMap() {
+  const overlayRef = useRef();
   const [_map, setMap] = useState();
   const ref = useRef();
 
   useEffect(() => {
-    const instance = new window.google.maps.Map(ref.current, mapOptions);
-    setMap(instance);
-    createOverlay(instance);
+    if (!overlayRef.current) {
+      const instance = new window.google.maps.Map(ref.current, mapOptions);
+      setMap(instance);
+      overlayRef.current = createOverlay(instance);
+    }
   }, []);
 
   return <div ref={ref} id="map" />;
@@ -103,4 +106,6 @@ function createOverlay(map) {
   };
 
   overlay.setMap(map);
+
+  return overlay;
 }
