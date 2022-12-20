@@ -94,8 +94,6 @@ function Overlay({ map }) {
     };
 
     overlay.onDraw = ({ transformer }) => {
-      overlay.requestRedraw();
-
       const matrix = transformer.fromLatLngAltitude({
         lat: mapOptions.center.lat,
         lng: mapOptions.center.lng,
@@ -103,6 +101,7 @@ function Overlay({ map }) {
       });
       camera.projectionMatrix = new Matrix4().fromArray(matrix);
 
+      overlay.requestRedraw();
       renderer.render(scene, camera);
       renderer.resetState();
     };
