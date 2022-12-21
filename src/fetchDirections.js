@@ -1,11 +1,15 @@
 import { getGeocode, getLatLng } from "use-places-autocomplete";
 
 export default async function fetchDirections(origin, destination, setRoute) {
-  const originResults = await getGeocode({ address: origin });
-  const originLocation = await getLatLng(originResults[0]);
+  const [originResults, destinationResults] = await Promise.all([
+    getGeocode({ address: origin }),
+    getGeocode({ address: destination }),
+  ]);
 
-  const destinationResults = await getGeocode({ address: destination });
-  const destinationLocation = await getLatLng(destinationResults[0]);
+  const [originLocation, destinationLocation] = await Promise.all([
+    getLatLng(originResults[0]),
+    getLatLng(destinationResults[0]),
+  ]);
 
   const service = new google.maps.DirectionsService();
   service.route(
