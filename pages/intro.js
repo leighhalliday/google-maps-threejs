@@ -44,8 +44,7 @@ function MyMap() {
 
 function createOverlay(map) {
   const overlay = new google.maps.WebGLOverlayView();
-  const loader = new GLTFLoader();
-  let renderer, scene, camera;
+  let renderer, scene, camera, loader;
 
   overlay.onAdd = () => {
     scene = new Scene();
@@ -53,7 +52,7 @@ function createOverlay(map) {
     const light = new AmbientLight(0xffffff, 0.9);
     scene.add(light);
 
-    // This work is based on "Low Poly Scooter" (https://sketchfab.com/3d-models/low-poly-scooter-cf0b53fddb5c469b9d0259104151f72d) by Qbo2Qbo (https://sketchfab.com/Qbo2Qbo) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+    loader = new GLTFLoader();
     loader.loadAsync("/low_poly_scooter/scene.gltf").then((object) => {
       const group = object.scene;
       group.scale.setScalar(25);
